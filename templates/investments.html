@@ -1,0 +1,563 @@
+{% extends "base.html" %}
+
+{% block title %}Investments - Finance Mentor AI{% endblock %}
+
+{% block content %}
+<div class="investments-page">
+    <div class="container-fluid py-4">
+        <!-- Page Header -->
+        <div class="page-header mb-4">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="page-title">
+                        <i class="fas fa-chart-line me-3"></i>Investment Portfolio
+                    </h1>
+                    <p class="page-subtitle">Track and manage your investment performance</p>
+                </div>
+                <div class="col-auto">
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-outline-primary" onclick="refreshPrices()">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh Prices
+                        </button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addInvestmentModal">
+                            <i class="fas fa-plus me-2"></i>Add Investment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio Overview -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="portfolio-card card">
+                    <div class="card-body">
+                        <div class="portfolio-icon bg-primary">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-value">$45,250</h3>
+                            <p class="portfolio-label">Total Value</p>
+                            <div class="portfolio-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                +$2,150 (5.0%)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="portfolio-card card">
+                    <div class="card-body">
+                        <div class="portfolio-icon bg-success">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-value">$43,100</h3>
+                            <p class="portfolio-label">Total Invested</p>
+                            <div class="portfolio-change neutral">
+                                <i class="fas fa-info-circle"></i>
+                                Cost basis
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="portfolio-card card">
+                    <div class="card-body">
+                        <div class="portfolio-icon bg-info">
+                            <i class="fas fa-trending-up"></i>
+                        </div>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-value">+$2,150</h3>
+                            <p class="portfolio-label">Total Gain/Loss</p>
+                            <div class="portfolio-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                +5.0% return
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="portfolio-card card">
+                    <div class="card-body">
+                        <div class="portfolio-icon bg-warning">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="portfolio-content">
+                            <h3 class="portfolio-value">+$125</h3>
+                            <p class="portfolio-label">Today's Change</p>
+                            <div class="portfolio-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                +0.28%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio Performance Chart -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Portfolio Performance</h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="portfolioChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Asset Allocation</h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="position: relative; height: 250px;">
+                            <canvas id="allocationChart"></canvas>
+                        </div>
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Stocks (75%)</span>
+                                <span>$33,938</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Bonds (15%)</span>
+                                <span>$6,788</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Cash (10%)</span>
+                                <span>$4,525</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Holdings Table -->
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="card holdings-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-list me-2"></i>Holdings
+                        </h5>
+                        <div class="card-actions">
+                            <div class="input-group input-group-sm" style="width: 250px;">
+                                <input type="text" class="form-control" placeholder="Search holdings...">
+                                <button class="btn btn-outline-secondary">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Shares</th>
+                                        <th>Price</th>
+                                        <th>Value</th>
+                                        <th>Gain/Loss</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>AAPL</strong></td>
+                                        <td>50</td>
+                                        <td>$175.25</td>
+                                        <td>$8,762.50</td>
+                                        <td class="text-success">+6.21%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>GOOGL</strong></td>
+                                        <td>25</td>
+                                        <td>$142.80</td>
+                                        <td>$3,570.00</td>
+                                        <td class="text-danger">-4.80%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>MSFT</strong></td>
+                                        <td>30</td>
+                                        <td>$415.50</td>
+                                        <td>$12,465.00</td>
+                                        <td class="text-success">+5.19%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>TSLA</strong></td>
+                                        <td>15</td>
+                                        <td>$245.75</td>
+                                        <td>$3,686.25</td>
+                                        <td class="text-danger">-12.23%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Investment Modal -->
+<div class="modal fade" id="addInvestmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus me-2"></i>Add Investment
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addInvestmentForm">
+                    <div class="mb-3">
+                        <label for="investmentSymbol" class="form-label">Symbol</label>
+                        <input type="text" class="form-control" id="investmentSymbol" placeholder="e.g., AAPL" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="investmentName" class="form-label">Company Name</label>
+                        <input type="text" class="form-control" id="investmentName" placeholder="e.g., Apple Inc." required>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="investmentShares" class="form-label">Shares</label>
+                                <input type="number" class="form-control" id="investmentShares" step="0.001" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="investmentPrice" class="form-label">Purchase Price</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="investmentPrice" step="0.01" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="purchaseDate" class="form-label">Purchase Date</label>
+                        <input type="date" class="form-control" id="purchaseDate" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addInvestment()">Add Investment</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Optimized initialization with performance checks
+let chartsInitialized = false;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Only initialize charts when they're actually visible
+    initializeChartsOnScroll();
+});
+
+function initializeChartsOnScroll() {
+    const chartContainers = document.querySelectorAll('#portfolioChart, #allocationChart');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !chartsInitialized) {
+                chartsInitialized = true;
+                // Add delay to prevent blocking the main thread
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        initializeInvestmentCharts();
+                    }, 100);
+                });
+                observer.disconnect(); // Stop observing once initialized
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '50px'
+    });
+    
+    chartContainers.forEach(container => {
+        if (container) observer.observe(container);
+    });
+}
+
+let portfolioChart = null;
+let allocationChart = null;
+
+function initializeInvestmentCharts() {
+    console.log('Initializing investment charts...');
+    
+    // Initialize Portfolio Chart with minimal config
+    const portfolioCtx = document.getElementById('portfolioChart');
+    if (portfolioCtx && !portfolioChart) {
+        try {
+            portfolioChart = new Chart(portfolioCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        data: [40000, 41200, 39800, 42500, 43100, 44200],
+                        borderColor: '#3B82F6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.2,
+                        fill: true,
+                        pointRadius: 2,
+                        pointHoverRadius: 4,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false, // Disable animations for performance
+                    interaction: {
+                        intersect: false,
+                        mode: 'nearest'
+                    },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            animation: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return '$' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            grid: { display: false },
+                            ticks: { 
+                                color: '#6B7280',
+                                maxTicksLimit: 6
+                            }
+                        },
+                        y: {
+                            display: true,
+                            beginAtZero: false,
+                            grid: { 
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)' 
+                            },
+                            ticks: { 
+                                color: '#6B7280',
+                                maxTicksLimit: 5,
+                                callback: function(value) { 
+                                    return '$' + (value/1000) + 'k'; 
+                                } 
+                            }
+                        }
+                    }
+                }
+            });
+            console.log('Portfolio chart initialized');
+        } catch (error) {
+            console.error('Portfolio chart error:', error);
+        }
+    }
+
+    // Initialize Allocation Chart with minimal config
+    const allocationCtx = document.getElementById('allocationChart');
+    if (allocationCtx && !allocationChart) {
+        try {
+            allocationChart = new Chart(allocationCtx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Stocks', 'Bonds', 'Cash'],
+                    datasets: [{
+                        data: [75, 15, 10],
+                        backgroundColor: ['#3B82F6', '#10B981', '#F59E0B'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false, // Disable animations
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            animation: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            console.log('Allocation chart initialized');
+        } catch (error) {
+            console.error('Allocation chart error:', error);
+        }
+    }
+}
+
+function destroyInvestmentCharts() {
+    if (portfolioChart) {
+        portfolioChart.destroy();
+        portfolioChart = null;
+    }
+    if (allocationChart) {
+        allocationChart.destroy();
+        allocationChart = null;
+    }
+}
+
+// Performance optimization: disable heavy effects on this page
+document.addEventListener('DOMContentLoaded', function() {
+    // Disable hover effects on cards for better performance
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+        card.style.transition = 'none';
+    });
+    
+    // Reduce animation complexity
+    document.body.classList.add('performance-mode');
+});
+
+// Cleanup when leaving page
+window.addEventListener('beforeunload', function() {
+    destroyInvestmentCharts();
+});
+
+function addInvestment() {
+    const symbol = document.getElementById('investmentSymbol').value;
+    const name = document.getElementById('investmentName').value;
+    const shares = document.getElementById('investmentShares').value;
+    const price = document.getElementById('investmentPrice').value;
+    const date = document.getElementById('purchaseDate').value;
+    
+    if (!symbol || !name || !shares || !price || !date) {
+        showErrorMessage('Please fill in all fields');
+        return;
+    }
+    
+    // Show loading state
+    const submitBtn = document.querySelector('#addInvestmentModal .btn-primary');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Adding...';
+    submitBtn.disabled = true;
+    
+    fetch('/api/investment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            symbol: symbol,
+            name: name,
+            shares: shares,
+            purchase_price: price,
+            purchase_date: date
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('addInvestmentModal')).hide();
+            showSuccessMessage(data.message);
+            setTimeout(() => location.reload(), 2000);
+        } else {
+            showErrorMessage(data.error || 'Failed to add investment');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showErrorMessage('Failed to add investment');
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+function refreshPrices() {
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Refreshing...';
+    button.disabled = true;
+    
+    fetch('/api/refresh-prices')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccessMessage(data.message);
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showErrorMessage(data.error || 'Failed to refresh prices');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorMessage('Failed to refresh prices');
+        })
+        .finally(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        });
+}
+
+function showSuccessMessage(message) {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-success alert-dismissible fade show position-fixed';
+    alert.style.cssText = 'top: 100px; right: 20px; z-index: 9999; min-width: 300px;';
+    alert.innerHTML = `
+        <i class="fas fa-check-circle me-2"></i>${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.remove();
+        }
+    }, 5000);
+}
+
+function showErrorMessage(message) {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+    alert.style.cssText = 'top: 100px; right: 20px; z-index: 9999; min-width: 300px;';
+    alert.innerHTML = `
+        <i class="fas fa-exclamation-circle me-2"></i>${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

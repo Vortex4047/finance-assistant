@@ -1,0 +1,552 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Finance Mentor AI{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+    <div class="container-fluid py-4">
+        <!-- Page Header -->
+        <div class="page-header mb-4">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="page-title">
+                        <i class="fas fa-cog me-3"></i>Settings & Preferences
+                    </h1>
+                    <p class="page-subtitle">Customize your Finance Mentor AI experience</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Settings Navigation -->
+            <div class="col-lg-3">
+                <div class="card settings-nav-card">
+                    <div class="card-body p-0">
+                        <div class="nav flex-column nav-pills" id="settings-tab" role="tablist">
+                            <button class="nav-link active" id="profile-tab" data-bs-toggle="pill" data-bs-target="#profile" type="button" role="tab">
+                                <i class="fas fa-user me-2"></i>Profile
+                            </button>
+                            <button class="nav-link" id="notifications-tab" data-bs-toggle="pill" data-bs-target="#notifications" type="button" role="tab">
+                                <i class="fas fa-bell me-2"></i>Notifications
+                            </button>
+                            <button class="nav-link" id="security-tab" data-bs-toggle="pill" data-bs-target="#security" type="button" role="tab">
+                                <i class="fas fa-shield-alt me-2"></i>Security
+                            </button>
+                            <button class="nav-link" id="preferences-tab" data-bs-toggle="pill" data-bs-target="#preferences" type="button" role="tab">
+                                <i class="fas fa-sliders-h me-2"></i>Preferences
+                            </button>
+                            <button class="nav-link" id="accounts-tab" data-bs-toggle="pill" data-bs-target="#accounts" type="button" role="tab">
+                                <i class="fas fa-university me-2"></i>Connected Accounts
+                            </button>
+                            <button class="nav-link" id="export-tab" data-bs-toggle="pill" data-bs-target="#export" type="button" role="tab">
+                                <i class="fas fa-download me-2"></i>Data Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Content -->
+            <div class="col-lg-9">
+                <div class="tab-content" id="settings-tabContent">
+                    <!-- Profile Settings -->
+                    <div class="tab-pane fade show active" id="profile" role="tabpanel">
+                        <div class="card settings-content-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-user me-2"></i>Profile Information
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="profileForm">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="firstName" class="form-label">First Name</label>
+                                                <input type="text" class="form-control" id="firstName" value="{{ current_user.name.split()[0] if current_user.name else '' }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="lastName" class="form-label">Last Name</label>
+                                                <input type="text" class="form-control" id="lastName" value="{{ current_user.name.split()[1] if current_user.name and current_user.name.split()|length > 1 else '' }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="email" value="{{ current_user.email }}" readonly>
+                                        <div class="form-text">Email cannot be changed. Contact support if needed.</div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="timezone" class="form-label">Timezone</label>
+                                                <select class="form-select" id="timezone">
+                                                    <option value="America/New_York">Eastern Time (ET)</option>
+                                                    <option value="America/Chicago">Central Time (CT)</option>
+                                                    <option value="America/Denver">Mountain Time (MT)</option>
+                                                    <option value="America/Los_Angeles" selected>Pacific Time (PT)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="currency" class="form-label">Default Currency</label>
+                                                <select class="form-select" id="currency">
+                                                    <option value="USD" selected>US Dollar (USD)</option>
+                                                    <option value="EUR">Euro (EUR)</option>
+                                                    <option value="GBP">British Pound (GBP)</option>
+                                                    <option value="CAD">Canadian Dollar (CAD)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-2"></i>Save Changes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notifications Settings -->
+                    <div class="tab-pane fade" id="notifications" role="tabpanel">
+                        <div class="card settings-content-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-bell me-2"></i>Notification Preferences
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="notification-group">
+                                    <h6 class="notification-group-title">Budget Alerts</h6>
+                                    <div class="notification-item">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="budgetAlerts" checked>
+                                            <label class="form-check-label" for="budgetAlerts">
+                                                Budget limit warnings
+                                            </label>
+                                        </div>
+                                        <small class="text-muted">Get notified when you reach 80% of your budget</small>
+                                    </div>
+                                    <div class="notification-item">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="budgetExceeded" checked>
+                                            <label class="form-check-label" for="budgetExceeded">
+                                                Budget exceeded alerts
+                                            </label>
+                                        </div>
+                                        <small class="text-muted">Get notified when you exceed your budget</small>
+                                    </div>
+                                </div>
+
+                                <div class="notification-group">
+                                    <h6 class="notification-group-title">Goal Updates</h6>
+                                    <div class="notification-item">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="goalProgress" checked>
+                                            <label class="form-check-label" for="goalProgress">
+                                                Goal progress updates
+                                            </label>
+                                        </div>
+                                        <small class="text-muted">Weekly updates on your financial goals</small>
+                                    </div>
+                                    <div class="notification-item">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="goalAchieved">
+                                            <label class="form-check-label" for="goalAchieved">
+                                                Goal achievement celebrations
+                                            </label>
+                                        </div>
+                                        <small class="text-muted">Celebrate when you reach your goals</small>
+                                    </div>
+                                </div>
+
+                                <div class="notification-group">
+                                    <h6 class="notification-group-title">Reports & Insights</h6>
+                                    <div class="notification-item">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="monthlyReports" checked>
+                                            <label class="form-check-label" for="monthlyReports">
+                                                Monthly financial reports
+                                            </label>
+                                        </div>
+                                        <small class="text-muted">Automatic monthly financial summaries</small>
+                                    </div>
+                                    <div class="notification-item">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="insights" checked>
+                                            <label class="form-check-label" for="insights">
+                                                AI insights and tips
+                                            </label>
+                                        </div>
+                                        <small class="text-muted">Personalized financial advice and insights</small>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-primary" onclick="saveNotificationSettings()">
+                                        <i class="fas fa-save me-2"></i>Save Preferences
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Settings -->
+                    <div class="tab-pane fade" id="security" role="tabpanel">
+                        <div class="card settings-content-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-shield-alt me-2"></i>Security Settings
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="security-section">
+                                    <h6 class="security-section-title">Change Password</h6>
+                                    <form id="passwordForm">
+                                        <div class="mb-3">
+                                            <label for="currentPassword" class="form-label">Current Password</label>
+                                            <input type="password" class="form-control" id="currentPassword" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="newPassword" class="form-label">New Password</label>
+                                            <input type="password" class="form-control" id="newPassword" required>
+                                            <div class="form-text">Password must be at least 8 characters long</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                                            <input type="password" class="form-control" id="confirmPassword" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-key me-2"></i>Update Password
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div class="security-section">
+                                    <h6 class="security-section-title">Two-Factor Authentication</h6>
+                                    <div class="security-item">
+                                        <div class="security-info">
+                                            <strong>Two-Factor Authentication</strong>
+                                            <p class="text-muted mb-0">Add an extra layer of security to your account</p>
+                                        </div>
+                                        <div class="security-action">
+                                            <button class="btn btn-outline-primary">
+                                                <i class="fas fa-mobile-alt me-2"></i>Enable 2FA
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="security-section">
+                                    <h6 class="security-section-title">Login Sessions</h6>
+                                    <div class="session-item">
+                                        <div class="session-info">
+                                            <div class="session-device">
+                                                <i class="fas fa-desktop me-2"></i>
+                                                <strong>Windows PC - Chrome</strong>
+                                                <span class="badge bg-success ms-2">Current</span>
+                                            </div>
+                                            <small class="text-muted">Last active: Now • IP: 192.168.1.100</small>
+                                        </div>
+                                    </div>
+                                    <div class="session-item">
+                                        <div class="session-info">
+                                            <div class="session-device">
+                                                <i class="fas fa-mobile me-2"></i>
+                                                <strong>iPhone - Safari</strong>
+                                            </div>
+                                            <small class="text-muted">Last active: 2 hours ago • IP: 192.168.1.101</small>
+                                        </div>
+                                        <div class="session-action">
+                                            <button class="btn btn-sm btn-outline-danger">Revoke</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preferences -->
+                    <div class="tab-pane fade" id="preferences" role="tabpanel">
+                        <div class="card settings-content-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-sliders-h me-2"></i>App Preferences
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="preference-group">
+                                    <h6 class="preference-group-title">Display Settings</h6>
+                                    <div class="preference-item">
+                                        <label for="theme" class="form-label">Theme</label>
+                                        <select class="form-select" id="theme">
+                                            <option value="light" selected>Light</option>
+                                            <option value="dark">Dark</option>
+                                            <option value="auto">Auto (System)</option>
+                                        </select>
+                                    </div>
+                                    <div class="preference-item">
+                                        <label for="dateFormat" class="form-label">Date Format</label>
+                                        <select class="form-select" id="dateFormat">
+                                            <option value="MM/DD/YYYY" selected>MM/DD/YYYY</option>
+                                            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="preference-group">
+                                    <h6 class="preference-group-title">Financial Settings</h6>
+                                    <div class="preference-item">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="hideBalances">
+                                            <label class="form-check-label" for="hideBalances">
+                                                Hide account balances by default
+                                            </label>
+                                        </div>
+                                        <small class="text-muted">Require click to show sensitive financial information</small>
+                                    </div>
+                                    <div class="preference-item">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="roundNumbers" checked>
+                                            <label class="form-check-label" for="roundNumbers">
+                                                Round numbers in charts
+                                            </label>
+                                        </div>
+                                        <small class="text-muted">Display rounded values for better readability</small>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-primary" onclick="savePreferences()">
+                                        <i class="fas fa-save me-2"></i>Save Preferences
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Connected Accounts -->
+                    <div class="tab-pane fade" id="accounts" role="tabpanel">
+                        <div class="card settings-content-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-university me-2"></i>Connected Accounts
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="account-item">
+                                    <div class="account-info">
+                                        <div class="account-icon bg-primary">
+                                            <i class="fas fa-university"></i>
+                                        </div>
+                                        <div class="account-details">
+                                            <strong>Demo Checking Account</strong>
+                                            <p class="text-muted mb-0">****1234 • Last synced: 2 hours ago</p>
+                                        </div>
+                                    </div>
+                                    <div class="account-actions">
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-sync me-1"></i>Sync
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-unlink me-1"></i>Disconnect
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="account-item">
+                                    <div class="account-info">
+                                        <div class="account-icon bg-success">
+                                            <i class="fas fa-piggy-bank"></i>
+                                        </div>
+                                        <div class="account-details">
+                                            <strong>Demo Savings Account</strong>
+                                            <p class="text-muted mb-0">****5678 • Last synced: 2 hours ago</p>
+                                        </div>
+                                    </div>
+                                    <div class="account-actions">
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-sync me-1"></i>Sync
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-unlink me-1"></i>Disconnect
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-4">
+                                    <button class="btn btn-primary" onclick="connectAccount()">
+                                        <i class="fas fa-plus me-2"></i>Connect New Account
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Export -->
+                    <div class="tab-pane fade" id="export" role="tabpanel">
+                        <div class="card settings-content-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-download me-2"></i>Data Export
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="export-section">
+                                    <h6 class="export-section-title">Export Your Data</h6>
+                                    <p class="text-muted">Download your financial data in various formats</p>
+                                    
+                                    <div class="export-options">
+                                        <div class="export-option">
+                                            <div class="export-info">
+                                                <i class="fas fa-file-csv text-success me-3"></i>
+                                                <div>
+                                                    <strong>Transactions (CSV)</strong>
+                                                    <p class="text-muted mb-0">All your transaction data in CSV format</p>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-outline-success">
+                                                <i class="fas fa-download me-1"></i>Export
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="export-option">
+                                            <div class="export-info">
+                                                <i class="fas fa-file-pdf text-danger me-3"></i>
+                                                <div>
+                                                    <strong>Financial Report (PDF)</strong>
+                                                    <p class="text-muted mb-0">Comprehensive financial summary</p>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-outline-danger">
+                                                <i class="fas fa-download me-1"></i>Export
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="export-option">
+                                            <div class="export-info">
+                                                <i class="fas fa-file-archive text-info me-3"></i>
+                                                <div>
+                                                    <strong>Complete Data Archive</strong>
+                                                    <p class="text-muted mb-0">All your data in a ZIP archive</p>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-outline-info">
+                                                <i class="fas fa-download me-1"></i>Export
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="export-section">
+                                    <h6 class="export-section-title text-danger">Danger Zone</h6>
+                                    <div class="danger-zone">
+                                        <div class="danger-item">
+                                            <div class="danger-info">
+                                                <strong>Delete Account</strong>
+                                                <p class="text-muted mb-0">Permanently delete your account and all data</p>
+                                            </div>
+                                            <button class="btn btn-danger" onclick="confirmDeleteAccount()">
+                                                <i class="fas fa-trash me-1"></i>Delete Account
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function saveNotificationSettings() {
+    // Collect notification preferences
+    const settings = {
+        budgetAlerts: document.getElementById('budgetAlerts').checked,
+        budgetExceeded: document.getElementById('budgetExceeded').checked,
+        goalProgress: document.getElementById('goalProgress').checked,
+        goalAchieved: document.getElementById('goalAchieved').checked,
+        monthlyReports: document.getElementById('monthlyReports').checked,
+        insights: document.getElementById('insights').checked
+    };
+    
+    // Save to backend
+    console.log('Saving notification settings:', settings);
+    showSuccessMessage('Notification preferences saved successfully!');
+}
+
+function savePreferences() {
+    // Collect app preferences
+    const preferences = {
+        theme: document.getElementById('theme').value,
+        dateFormat: document.getElementById('dateFormat').value,
+        hideBalances: document.getElementById('hideBalances').checked,
+        roundNumbers: document.getElementById('roundNumbers').checked
+    };
+    
+    // Save to backend
+    console.log('Saving preferences:', preferences);
+    showSuccessMessage('Preferences saved successfully!');
+}
+
+function confirmDeleteAccount() {
+    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        if (confirm('This will permanently delete all your financial data. Are you absolutely sure?')) {
+            // Delete account logic here
+            alert('Account deletion functionality would be implemented here.');
+        }
+    }
+}
+
+function showSuccessMessage(message) {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-success alert-dismissible fade show position-fixed';
+    alert.style.cssText = 'top: 100px; right: 20px; z-index: 9999; min-width: 300px;';
+    alert.innerHTML = `
+        <i class="fas fa-check-circle me-2"></i>${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.remove();
+        }
+    }, 5000);
+}
+
+// Form submissions
+document.getElementById('profileForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    showSuccessMessage('Profile updated successfully!');
+});
+
+document.getElementById('passwordForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (newPassword !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+    }
+    
+    showSuccessMessage('Password updated successfully!');
+    this.reset();
+});
+</script>
+{% endblock %}

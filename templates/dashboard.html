@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Finance Mentor AI{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3 col-md-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h6 class="card-title text-muted mb-3">Quick Actions</h6>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" onclick="openChatModal()">
+                            <i class="fas fa-robot me-2"></i>Ask Finance AI
+                        </button>
+                        <button class="btn btn-success" onclick="connectAccount()">
+                            <i class="fas fa-university me-2"></i>Connect Account
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="loadForecast()">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Account Summary -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted mb-3">Connected Accounts</h6>
+                    {% if accounts %}
+                        {% for account in accounts %}
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <small class="text-muted">{{ account.name }}</small>
+                                <div class="fw-bold">${{ "%.2f"|format(account.balance) }}</div>
+                            </div>
+                            <span class="badge bg-success">Active</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted mb-0">No accounts connected yet.</p>
+                        <button class="btn btn-sm btn-outline-primary mt-2" onclick="connectAccount()">
+                            Connect Your First Account
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-lg-9 col-md-8">
+            <!-- Welcome Header -->
+            <div class="row mb-4">
+                <div class="col">
+                    <h2 class="fw-bold">Welcome back, {{ current_user.name }}!</h2>
+                    <p class="text-muted">Here's your financial overview for today.</p>
+                </div>
+            </div>
+            
+            <!-- Financial Overview Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="card financial-card h-100 animate-on-scroll">
+                        <div class="card-body text-center">
+                            <div class="financial-icon icon-balance mx-auto">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div class="metric-label">Total Balance</div>
+                            <div class="metric-value">${{ "%.2f"|format(total_balance) }}</div>
+                            <small class="text-muted">Across all accounts</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card financial-card h-100 animate-on-scroll">
+                        <div class="card-body text-center">
+                            <div class="financial-icon icon-spending mx-auto">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                            <div class="metric-label">This Month's Spending</div>
+                            <div class="metric-value">
+                                ${{ "%.2f"|format(monthly_spending|sum(attribute='total')|abs) }}
+                            </div>
+                            <small class="text-muted">Total expenses</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card financial-card h-100 animate-on-scroll">
+                        <div class="card-body text-center">
+                            <div class="financial-icon icon-forecast mx-auto">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="metric-label">Forecast (30 days)</div>
+                            <div class="metric-value" id="forecast-amount">
+                                <div class="spinner-border spinner-border-sm" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <small class="text-muted">Predicted balance</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Transactions -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">Recent Transactions</h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_transactions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th>Category</th>
+                                        <th class="text-end">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for transaction in recent_transactions %}
+                                    <tr>
+                                        <td>{{ transaction.date.strftime('%m/%d') }}</td>
+                                        <td>{{ transaction.description }}</td>
+                                        <td>
+                                            <span class="badge bg-light text-dark">{{ transaction.category }}</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <span class="{% if transaction.amount < 0 %}text-danger{% else %}text-success{% endif %}">
+                                                {% if transaction.amount < 0 %}-{% else %}+{% endif %}${{ "%.2f"|format(transaction.amount|abs) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">No transactions yet</h6>
+                            <p class="text-muted">Connect your bank account to see your transactions here.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Chat Button -->
+<button class="btn btn-primary btn-floating" onclick="openChatModal()" title="Chat with Finance AI">
+    <i class="fas fa-robot"></i>
+</button>
+
+<!-- Chat Modal -->
+<div class="modal fade" id="chatModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-robot me-2"></i>Finance Mentor AI
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="chatMessages" class="chat-messages mb-3" style="height: 400px; overflow-y: auto;">
+                    <div class="message bot-message">
+                        <div class="message-content">
+                            <strong>Finance AI:</strong> Hi! I'm here to help with your finances. 
+                            You can ask me about your balance, spending, forecasts, or get savings advice.
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="chatInput" class="form-control" 
+                           placeholder="Ask me about your finances..." 
+                           onkeypress="handleChatKeyPress(event)"
+                           style="border-radius: 25px 0 0 25px; border: 2px solid #e9ecef; padding: 0.75rem 1rem;">
+                    <button class="btn btn-primary" onclick="sendMessage()" 
+                            style="border-radius: 0 25px 25px 0; padding: 0.75rem 1.5rem;">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <!-- Quick suggestion buttons -->
+                <div class="mt-3">
+                    <small class="text-muted d-block mb-2">💡 Try asking:</small>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-outline-primary btn-sm" onclick="sendQuickMessage('What is my balance?')">
+                            💰 My Balance
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="sendQuickMessage('How much did I spend this month?')">
+                            📊 Monthly Spending
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="sendQuickMessage('Give me savings advice')">
+                            💡 Savings Tips
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="sendQuickMessage('Can I afford $100?')">
+                            ✅ Affordability
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Load forecast on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadForecast();
+});
+
+function loadForecast() {
+    // Simulate forecast loading - in real app, this would be an API call
+    setTimeout(() => {
+        document.getElementById('forecast-amount').textContent = '$2,450.00';
+    }, 1000);
+}
+
+function openChatModal() {
+    const modal = new bootstrap.Modal(document.getElementById('chatModal'));
+    modal.show();
+}
+
+function connectAccount() {
+    // In a real implementation, this would initialize Plaid Link
+    alert('Plaid Link integration would be initialized here. Please set up your Plaid credentials first.');
+}
+
+function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Add user message to chat
+    addMessageToChat('user', message);
+    input.value = '';
+    
+    // Send to backend
+    fetch('/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+        addMessageToChat('bot', data.response);
+    })
+    .catch(error => {
+        addMessageToChat('bot', 'Sorry, I encountered an error. Please try again.');
+    });
+}
+
+function addMessageToChat(sender, message) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}-message`;
+    
+    const content = document.createElement('div');
+    content.className = 'message-content';
+    content.innerHTML = `<strong>${sender === 'user' ? 'You' : 'Finance AI'}:</strong> ${message}`;
+    
+    messageDiv.appendChild(content);
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function handleChatKeyPress(event) {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+}
+</script>
+{% endblock %}

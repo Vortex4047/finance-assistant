@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Your AI-Powered Finance Mentor</h1>
+                <p class="lead mb-4">
+                    Get personalized financial advice, predict your cash flow, and make smarter money decisions 
+                    with our intelligent finance coaching system.
+                </p>
+                <div class="d-grid gap-2 d-md-flex">
+                    <a href="{{ url_for('register') }}" class="btn btn-light btn-lg px-4 me-md-2">
+                        Get Started Free
+                    </a>
+                    <a href="#features" class="btn btn-outline-light btn-lg px-4">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <i class="fas fa-robot display-1 opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section id="features" class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-5 fw-bold">Smart Financial Features</h2>
+                <p class="lead text-muted">
+                    Everything you need to take control of your finances
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-comments fa-lg"></i>
+                        </div>
+                        <h5 class="card-title">Natural Language Chat</h5>
+                        <p class="card-text text-muted">
+                            Ask questions about your finances in plain English. 
+                            "How much did I spend on food this month?"
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-success text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-chart-line fa-lg"></i>
+                        </div>
+                        <h5 class="card-title">Cash Flow Forecasting</h5>
+                        <p class="card-text text-muted">
+                            Predict your future balance with AI-powered forecasting 
+                            based on your spending patterns.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-warning text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-lightbulb fa-lg"></i>
+                        </div>
+                        <h5 class="card-title">Personalized Advice</h5>
+                        <p class="card-text text-muted">
+                            Get tailored savings tips and spending recommendations 
+                            based on your unique financial behavior.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-4 mt-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-info text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-university fa-lg"></i>
+                        </div>
+                        <h5 class="card-title">Bank Integration</h5>
+                        <p class="card-text text-muted">
+                            Securely connect your bank accounts to automatically 
+                            track transactions and balances.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-danger text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-shield-alt fa-lg"></i>
+                        </div>
+                        <h5 class="card-title">Bank-Level Security</h5>
+                        <p class="card-text text-muted">
+                            Your financial data is protected with enterprise-grade 
+                            encryption and security measures.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-secondary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-mobile-alt fa-lg"></i>
+                        </div>
+                        <h5 class="card-title">Mobile Responsive</h5>
+                        <p class="card-text text-muted">
+                            Access your financial insights anywhere, anytime 
+                            with our mobile-optimized interface.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h3 class="fw-bold mb-4">Ready to Transform Your Financial Future?</h3>
+                <p class="lead text-muted mb-4">
+                    Join thousands of users who are already making smarter financial decisions 
+                    with Finance Mentor AI.
+                </p>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Free to get started</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>No credit card required</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Setup in under 5 minutes</li>
+                </ul>
+            </div>
+            <div class="col-lg-6">
+                <div class="card border-0 shadow">
+                    <div class="card-body p-4">
+                        <h5 class="card-title text-center mb-4">Start Your Financial Journey</h5>
+                        <div class="d-grid">
+                            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                                Create Free Account
+                            </a>
+                        </div>
+                        <p class="text-center text-muted mt-3 mb-0">
+                            Already have an account? <a href="{{ url_for('login') }}">Sign in</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

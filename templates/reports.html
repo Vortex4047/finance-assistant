@@ -1,0 +1,592 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Finance Mentor AI{% endblock %}
+
+{% block content %}
+<div class="reports-page">
+    <div class="container-fluid py-4">
+        <!-- Page Header -->
+        <div class="page-header mb-4">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="page-title">
+                        <i class="fas fa-file-alt me-3"></i>Financial Reports
+                    </h1>
+                    <p class="page-subtitle">Comprehensive financial analysis and insights</p>
+                </div>
+                <div class="col-auto">
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-outline-primary" onclick="generateReport('monthly')">
+                            <i class="fas fa-calendar-alt me-2"></i>Monthly Report
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="generateReport('quarterly')">
+                            <i class="fas fa-calendar me-2"></i>Quarterly Report
+                        </button>
+                        <button class="btn btn-primary" onclick="generateReport('yearly')">
+                            <i class="fas fa-chart-bar me-2"></i>Annual Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Summary Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="report-summary-card card">
+                    <div class="card-body">
+                        <div class="summary-icon bg-primary">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="summary-content">
+                            <h3 class="summary-value">12</h3>
+                            <p class="summary-label">Total Reports</p>
+                            <small class="text-muted">Generated this year</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="report-summary-card card">
+                    <div class="card-body">
+                        <div class="summary-icon bg-success">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <div class="summary-content">
+                            <h3 class="summary-value">8</h3>
+                            <p class="summary-label">Downloaded</p>
+                            <small class="text-muted">PDF exports</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="report-summary-card card">
+                    <div class="card-body">
+                        <div class="summary-icon bg-info">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="summary-content">
+                            <h3 class="summary-value">Oct 2024</h3>
+                            <p class="summary-label">Latest Report</p>
+                            <small class="text-muted">Monthly analysis</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="report-summary-card card">
+                    <div class="card-body">
+                        <div class="summary-icon bg-warning">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="summary-content">
+                            <h3 class="summary-value">+15%</h3>
+                            <p class="summary-label">Savings Growth</p>
+                            <small class="text-muted">Year over year</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Month Report Preview -->
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <div class="card report-preview-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-eye me-2"></i>October 2024 - Monthly Report Preview
+                        </h5>
+                        <div class="card-actions">
+                            <button class="btn btn-sm btn-outline-primary" onclick="downloadReport('monthly')">
+                                <i class="fas fa-download me-1"></i>Download Report
+                            </button>
+                            <button class="btn btn-sm btn-primary" onclick="shareReport()">
+                                <i class="fas fa-share me-1"></i>Share Report
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <!-- Income Summary -->
+                            <div class="col-lg-4">
+                                <div class="report-section">
+                                    <h6 class="section-title">
+                                        <i class="fas fa-arrow-up text-success me-2"></i>Income Summary
+                                    </h6>
+                                    <div class="section-content">
+                                        <div class="metric-row">
+                                            <span class="metric-label">Total Income</span>
+                                            <span class="metric-value text-success">$4,250.00</span>
+                                        </div>
+                                        <div class="metric-row">
+                                            <span class="metric-label">Salary</span>
+                                            <span class="metric-value">$3,800.00</span>
+                                        </div>
+                                        <div class="metric-row">
+                                            <span class="metric-label">Side Income</span>
+                                            <span class="metric-value">$450.00</span>
+                                        </div>
+                                        <div class="metric-row">
+                                            <span class="metric-label">vs Last Month</span>
+                                            <span class="metric-value text-success">+5.2%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Expense Summary -->
+                            <div class="col-lg-4">
+                                <div class="report-section">
+                                    <h6 class="section-title">
+                                        <i class="fas fa-arrow-down text-danger me-2"></i>Expense Summary
+                                    </h6>
+                                    <div class="section-content">
+                                        <div class="metric-row">
+                                            <span class="metric-label">Total Expenses</span>
+                                            <span class="metric-value text-danger">$2,890.00</span>
+                                        </div>
+                                        <div class="metric-row">
+                                            <span class="metric-label">Fixed Costs</span>
+                                            <span class="metric-value">$1,850.00</span>
+                                        </div>
+                                        <div class="metric-row">
+                                            <span class="metric-label">Variable Costs</span>
+                                            <span class="metric-value">$1,040.00</span>
+                                        </div>
+                                        <div class="metric-row">
+                                            <span class="metric-label">vs Last Month</span>
+                                            <span class="metric-value text-warning">+2.1%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Savings Summary -->
+                            <div class="col-lg-4">
+                                <div class="report-section">
+                                    <h6 class="section-title">
+                                        <i class="fas fa-piggy-bank text-info me-2"></i>Savings Summary
+                                    </h6>
+                                    <div class="section-content">
+                                        <div class="metric-row">
+                                            <span class="metric-label">Net Savings</span>
+                                            <span class="metric-value text-info">$1,360.00</span>
+                                        </div>
+                                        <div class="metric-row">
+                                            <span class="metric-label">Savings Rate</span>
+                                            <span class="metric-value">32.0%</span>
+                                        </div>
+                                        <div class="metric-row">
+                                            <span class="metric-label">Emergency Fund</span>
+                                            <span class="metric-value">$3,750.00</span>
+                                        </div>
+                                        <div class="metric-row">
+                                            <span class="metric-label">Goal Progress</span>
+                                            <span class="metric-value text-success">+12.5%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Category Breakdown Chart -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h6 class="section-title mb-3">
+                                    <i class="fas fa-chart-pie me-2"></i>Expense Breakdown
+                                </h6>
+                                <div class="chart-container" style="position: relative; height: 300px; width: 100%;">
+                                    <canvas id="expenseBreakdownChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report History -->
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="card report-history-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-history me-2"></i>Report History
+                        </h5>
+                        <div class="card-actions">
+                            <div class="input-group input-group-sm" style="width: 250px;">
+                                <input type="text" class="form-control" placeholder="Search reports...">
+                                <button class="btn btn-outline-secondary">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Report Name</th>
+                                        <th>Type</th>
+                                        <th>Period</th>
+                                        <th>Generated</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="report-name">
+                                                <i class="fas fa-file-pdf text-danger me-2"></i>
+                                                <strong>October 2024 Monthly Report</strong>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-primary">Monthly</span></td>
+                                        <td>Oct 1 - Oct 31, 2024</td>
+                                        <td>Nov 1, 2024</td>
+                                        <td><span class="badge bg-success">Complete</span></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-outline-success" title="Download">
+                                                    <i class="fas fa-download"></i>
+                                                </button>
+                                                <button class="btn btn-outline-info" title="Share">
+                                                    <i class="fas fa-share"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="report-name">
+                                                <i class="fas fa-file-pdf text-danger me-2"></i>
+                                                <strong>Q3 2024 Quarterly Report</strong>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-info">Quarterly</span></td>
+                                        <td>Jul 1 - Sep 30, 2024</td>
+                                        <td>Oct 1, 2024</td>
+                                        <td><span class="badge bg-success">Complete</span></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-outline-success" title="Download">
+                                                    <i class="fas fa-download"></i>
+                                                </button>
+                                                <button class="btn btn-outline-info" title="Share">
+                                                    <i class="fas fa-share"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="report-name">
+                                                <i class="fas fa-file-pdf text-danger me-2"></i>
+                                                <strong>September 2024 Monthly Report</strong>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-primary">Monthly</span></td>
+                                        <td>Sep 1 - Sep 30, 2024</td>
+                                        <td>Oct 1, 2024</td>
+                                        <td><span class="badge bg-success">Complete</span></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-outline-success" title="Download">
+                                                    <i class="fas fa-download"></i>
+                                                </button>
+                                                <button class="btn btn-outline-info" title="Share">
+                                                    <i class="fas fa-share"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="report-name">
+                                                <i class="fas fa-spinner fa-spin text-warning me-2"></i>
+                                                <strong>November 2024 Monthly Report</strong>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-primary">Monthly</span></td>
+                                        <td>Nov 1 - Nov 30, 2024</td>
+                                        <td>In Progress</td>
+                                        <td><span class="badge bg-warning">Generating</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-secondary" disabled>
+                                                <i class="fas fa-clock me-1"></i>Processing
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Improved initialization with error handling
+document.addEventListener('DOMContentLoaded', function() {
+    // Add a delay to ensure all resources are loaded
+    setTimeout(() => {
+        initializeReportCharts();
+    }, 200);
+});
+
+// Cleanup when leaving the page
+window.addEventListener('beforeunload', function() {
+    destroyReportCharts();
+});
+
+// Handle page visibility changes
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        // Page is hidden, pause any animations
+        if (reportChart) {
+            reportChart.options.animation.duration = 0;
+            reportChart.update('none');
+        }
+    } else {
+        // Page is visible again, restore animations
+        if (reportChart) {
+            reportChart.options.animation.duration = 800;
+        }
+    }
+});
+
+let reportChart = null; // Global variable to track chart instance
+
+function initializeReportCharts() {
+    // Wait for DOM to be fully loaded
+    if (document.readyState !== 'complete') {
+        window.addEventListener('load', initializeReportCharts);
+        return;
+    }
+    
+    const ctx = document.getElementById('expenseBreakdownChart');
+    if (!ctx) return;
+    
+    // Destroy existing chart if it exists
+    if (reportChart) {
+        reportChart.destroy();
+        reportChart = null;
+    }
+    
+    // Add a small delay to ensure proper rendering
+    setTimeout(() => {
+        try {
+            const chartCtx = ctx.getContext('2d');
+            
+            reportChart = new Chart(chartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Housing', 'Food', 'Transportation', 'Utilities', 'Entertainment', 'Healthcare', 'Other'],
+                    datasets: [{
+                        label: 'Amount Spent',
+                        data: [1200, 450, 300, 180, 150, 120, 90],
+                        backgroundColor: [
+                            '#3B82F6', // Housing - Blue
+                            '#EF4444', // Food - Red  
+                            '#10B981', // Transportation - Green
+                            '#F59E0B', // Utilities - Orange
+                            '#8B5CF6', // Entertainment - Purple
+                            '#06B6D4', // Healthcare - Cyan
+                            '#6B7280'  // Other - Gray
+                        ],
+                        borderWidth: 0,
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 800,
+                        easing: 'easeOutQuart'
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: 'white',
+                            bodyColor: 'white',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return '$' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6B7280',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6B7280',
+                                font: {
+                                    size: 12
+                                },
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Chart initialization error:', error);
+        }
+    }, 100);
+}
+
+// Cleanup function
+function destroyReportCharts() {
+    if (reportChart) {
+        reportChart.destroy();
+        reportChart = null;
+    }
+}
+
+function generateReport(type) {
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+    button.disabled = true;
+    
+    fetch(`/api/generate-report/${type}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccessMessage(data.message);
+                // Optionally refresh the page to show new report
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showErrorMessage(data.error || 'Failed to generate report');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorMessage('Failed to generate report');
+        })
+        .finally(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        });
+}
+
+function downloadReport(type) {
+    // Create download link
+    const link = document.createElement('a');
+    link.href = `/api/download-report/${type}`;
+    link.download = `${type}_report_${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showSuccessMessage('Report download started!');
+}
+
+function showErrorMessage(message) {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+    alert.style.cssText = 'top: 100px; right: 20px; z-index: 9999; min-width: 300px;';
+    alert.innerHTML = `
+        <i class="fas fa-exclamation-circle me-2"></i>${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.remove();
+        }
+    }, 5000);
+}
+
+function showSuccessMessage(message) {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-success alert-dismissible fade show position-fixed';
+    alert.style.cssText = 'top: 100px; right: 20px; z-index: 9999; min-width: 300px;';
+    alert.innerHTML = `
+        <i class="fas fa-check-circle me-2"></i>${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.remove();
+        }
+    }, 5000);
+}
+
+function viewReport(type) {
+    // Scroll to report preview
+    document.querySelector('.report-preview-card').scrollIntoView({ 
+        behavior: 'smooth' 
+    });
+}
+
+function shareReport() {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Financial Report - Finance Mentor AI',
+            text: 'Check out my financial report from Finance Mentor AI',
+            url: window.location.href
+        });
+    } else {
+        // Fallback - copy link to clipboard
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            showSuccessMessage('Report link copied to clipboard!');
+        });
+    }
+}
+</script>
+{% endblock %}
