@@ -87,39 +87,56 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    # Get user's accounts and recent transactions
-    accounts = Account.query.filter_by(user_id=current_user.id).all()
+    try:
+        # Get user's accounts and recent transactions
+        accounts = Account.query.filter_by(user_id=current_user.id).all()
+        
+        # Auto-create demo data for new users (first time visiting dashboard)
+        if not accounts:
+            try:
+                create_demo_accounts_and_transactions(current_user.id)
+                # Refresh the session to get the new accounts
+                db.session.expire_all()
+                accounts = Account.query.filter_by(user_id=current_user.id).all()
+            except Exception as e:
+                print(f"Error creating demo data: {e}")
+                # If demo data creation fails, continue with empty accounts
+                accounts = []
+        
+        recent_transactions = Transaction.query.filter_by(user_id=current_user.id)\
+            .order_by(Transaction.date.desc()).limit(10).all()
+        
+        # Calculate total balance
+        total_balance = sum(account.balance for account in accounts) if accounts else 0
+        
+        # Get spending by category for current month
+        current_month = datetime.now().replace(day=1)
+        monthly_spending = db.session.query(
+            Transaction.category, 
+            db.func.sum(Transaction.amount).label('total')
+        ).filter(
+            Transaction.user_id == current_user.id,
+            Transaction.date >= current_month,
+            Transaction.amount < 0  # Only expenses
+        ).group_by(Transaction.category).all()
+        
+        return render_template('dashboard.html', 
+                             accounts=accounts,
+                             recent_transactions=recent_transactions,
+                             total_balance=total_balance,
+                             monthly_spending=monthly_spending)
     
-    # Auto-create demo data for new users (first time visiting dashboard)
-    if not accounts:
-        try:
-            create_demo_accounts_and_transactions(current_user.id)
-            accounts = Account.query.filter_by(user_id=current_user.id).all()
-        except Exception as e:
-            print(f"Error creating demo data: {e}")
-    
-    recent_transactions = Transaction.query.filter_by(user_id=current_user.id)\
-        .order_by(Transaction.date.desc()).limit(10).all()
-    
-    # Calculate total balance
-    total_balance = sum(account.balance for account in accounts)
-    
-    # Get spending by category for current month
-    current_month = datetime.now().replace(day=1)
-    monthly_spending = db.session.query(
-        Transaction.category, 
-        db.func.sum(Transaction.amount).label('total')
-    ).filter(
-        Transaction.user_id == current_user.id,
-        Transaction.date >= current_month,
-        Transaction.amount < 0  # Only expenses
-    ).group_by(Transaction.category).all()
-    
-    return render_template('dashboard.html', 
-                         accounts=accounts,
-                         recent_transactions=recent_transactions,
-                         total_balance=total_balance,
-                         monthly_spending=monthly_spending)
+    except Exception as e:
+        # Handle any database session issues
+        db.session.rollback()
+        print(f"Dashboard error: {e}")
+        
+        # Return dashboard with empty data if there's an error
+        return render_template('dashboard.html', 
+                             accounts=[],
+                             recent_transactions=[],
+                             total_balance=0,
+                             monthly_spending=[])
 
 @app.route('/chat', methods=['POST'])
 @login_required
@@ -424,16 +441,19 @@ def create_demo_data():
         ]
         
         for account_data in demo_accounts:
+            # Create unique plaid_account_id for each user
+            plaid_account_id = f"demo_{current_user.id}_{account_data['name'].lower().replace(' ', '_')}"
+            
             # Check if account already exists
             existing = Account.query.filter_by(
                 user_id=current_user.id,
-                name=account_data['name']
+                plaid_account_id=plaid_account_id
             ).first()
             
             if not existing:
                 account = Account(
                     user_id=current_user.id,
-                    plaid_account_id=f"demo_{account_data['name'].lower().replace(' ', '_')}",
+                    plaid_account_id=plaid_account_id,
                     access_token='demo_token',
                     name=account_data['name'],
                     account_type=account_data['type'],
@@ -449,6 +469,7 @@ def create_demo_data():
         return jsonify({'success': True, 'message': 'Demo data created successfully!'})
     
     except Exception as e:
+        db.session.rollback()
         return jsonify({'error': str(e)}), 400
 
 @app.route('/connect_account', methods=['POST'])
@@ -529,20 +550,33 @@ def create_demo_accounts_and_transactions(user_id):
     ]
     
     for account_data in demo_accounts:
-        account = Account(
+        # Create unique plaid_account_id for each user
+        plaid_account_id = f"demo_{user_id}_{account_data['name'].lower().replace(' ', '_')}"
+        
+        # Check if account already exists for this user
+        existing_account = Account.query.filter_by(
             user_id=user_id,
-            plaid_account_id=f"demo_{account_data['name'].lower().replace(' ', '_')}",
-            access_token='demo_token',
-            name=account_data['name'],
-            account_type=account_data['type'],
-            balance=account_data['balance']
-        )
-        db.session.add(account)
+            plaid_account_id=plaid_account_id
+        ).first()
+        
+        if not existing_account:
+            account = Account(
+                user_id=user_id,
+                plaid_account_id=plaid_account_id,
+                access_token='demo_token',
+                name=account_data['name'],
+                account_type=account_data['type'],
+                balance=account_data['balance']
+            )
+            db.session.add(account)
     
-    db.session.commit()
-    
-    # Create demo transactions
-    create_demo_transactions(user_id)
+    try:
+        db.session.commit()
+        # Create demo transactions
+        create_demo_transactions(user_id)
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating demo accounts: {e}")
 
 def create_demo_transactions(user_id):
     """Create demo transactions for testing"""
@@ -573,31 +607,37 @@ def create_demo_transactions(user_id):
     # Create transactions for the last 60 days
     start_date = date.today() - timedelta(days=60)
     
-    for i in range(45):  # Create 45 transactions
-        transaction_template = random.choice(demo_transactions)
-        transaction_date = start_date + timedelta(days=random.randint(0, 60))
-        amount = random.uniform(*transaction_template['amount_range'])
+    try:
+        for i in range(45):  # Create 45 transactions
+            transaction_template = random.choice(demo_transactions)
+            transaction_date = start_date + timedelta(days=random.randint(0, 60))
+            amount = random.uniform(*transaction_template['amount_range'])
+            
+            # Create unique transaction ID
+            import time
+            plaid_transaction_id = f"demo_trans_{user_id}_{i}_{int(time.mktime(transaction_date.timetuple()))}"
+            
+            # Check if transaction already exists (avoid duplicates)
+            existing = Transaction.query.filter_by(
+                plaid_transaction_id=plaid_transaction_id
+            ).first()
+            
+            if not existing:
+                transaction = Transaction(
+                    user_id=user_id,
+                    account_id=checking_account.id,
+                    plaid_transaction_id=plaid_transaction_id,
+                    amount=amount,
+                    date=transaction_date,
+                    description=transaction_template['description'],
+                    category=transaction_template['category']
+                )
+                db.session.add(transaction)
         
-        # Check if transaction already exists (avoid duplicates)
-        existing = Transaction.query.filter_by(
-            user_id=user_id,
-            description=transaction_template['description'],
-            date=transaction_date
-        ).first()
-        
-        if not existing:
-            transaction = Transaction(
-                user_id=user_id,
-                account_id=checking_account.id,
-                plaid_transaction_id=f"demo_trans_{i}_{user_id}",
-                amount=amount,
-                date=transaction_date,
-                description=transaction_template['description'],
-                category=transaction_template['category']
-            )
-            db.session.add(transaction)
-    
-    db.session.commit()
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating demo transactions: {e}")
 
 # Additional routes for new pages
 @app.route('/analytics')
@@ -1026,4 +1066,9 @@ def get_income_vs_expenses(user_id, months=6):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+    # For local development
     app.run(debug=True)
+
+# For Vercel deployment
+def handler(request):
+    return app(request.environ, request.start_response)

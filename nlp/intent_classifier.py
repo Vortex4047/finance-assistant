@@ -1,12 +1,12 @@
 import re
-import spacy
-from transformers import pipeline
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.pipeline import Pipeline
-import pickle
 import os
+
+# Optional imports for enhanced functionality
+try:
+    import spacy
+    SPACY_AVAILABLE = True
+except ImportError:
+    SPACY_AVAILABLE = False
 
 class IntentClassifier:
     def __init__(self):
@@ -53,57 +53,25 @@ class IntentClassifier:
         # Load or train the model
         self._load_or_train_model()
         
-        # Load spaCy model for text preprocessing
-        try:
-            self.nlp = spacy.load("en_core_web_sm")
-        except OSError:
-            print("spaCy model not found. Install with: python -m spacy download en_core_web_sm")
-            self.nlp = None
+        # Load spaCy model for text preprocessing if available
+        self.nlp = None
+        if SPACY_AVAILABLE:
+            try:
+                self.nlp = spacy.load("en_core_web_sm")
+            except OSError:
+                print("spaCy model not found. Using basic text preprocessing.")
+                self.nlp = None
     
     def _load_or_train_model(self):
         """Load existing model or train a new one"""
-        model_path = 'models/intent_classifier.pkl'
-        
-        if os.path.exists(model_path):
-            try:
-                with open(model_path, 'rb') as f:
-                    self.model = pickle.load(f)
-                return
-            except:
-                pass
-        
-        # Train new model
-        self._train_model()
-        
-        # Save the model
-        os.makedirs('models', exist_ok=True)
-        with open(model_path, 'wb') as f:
-            pickle.dump(self.model, f)
+        # For Vercel deployment, skip ML model training to save memory
+        # Use rule-based classification only
+        self.model = None
     
     def _train_model(self):
-        """Train intent classification model"""
-        # Prepare training data
-        X_train = []
-        y_train = []
-        
-        for intent, examples in self.intents.items():
-            for example in examples:
-                X_train.append(example)
-                y_train.append(intent)
-                
-                # Add variations
-                variations = self._generate_variations(example)
-                for variation in variations:
-                    X_train.append(variation)
-                    y_train.append(intent)
-        
-        # Create and train pipeline
-        self.model = Pipeline([
-            ('tfidf', TfidfVectorizer(ngram_range=(1, 2), stop_words='english')),
-            ('classifier', MultinomialNB(alpha=0.1))
-        ])
-        
-        self.model.fit(X_train, y_train)
+        """Train intent classification model - disabled for serverless deployment"""
+        # Skip ML training for Vercel deployment
+        pass
     
     def _generate_variations(self, text):
         """Generate variations of training examples"""
@@ -153,21 +121,7 @@ class IntentClassifier:
         if rule_based_intent:
             return rule_based_intent, 0.9
         
-        # Fallback to ML model if available
-        if self.model:
-            try:
-                # Preprocess text
-                processed_text = self.preprocess_text(text)
-                
-                # Get prediction and confidence
-                prediction = self.model.predict([processed_text])[0]
-                probabilities = self.model.predict_proba([processed_text])[0]
-                confidence = max(probabilities)
-                
-                return prediction, confidence
-            except Exception as e:
-                print(f"ML classification error: {e}")
-                return 'general_help', 0.5
+        # Skip ML model for serverless deployment
         
         # Default fallback
         return 'general_help', 0.5

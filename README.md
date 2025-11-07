@@ -43,16 +43,27 @@ A comprehensive, AI-powered financial management platform that provides personal
 
 ## 🚀 **Quick Start Guide**
 
-### **Prerequisites**
+### **Super Quick Start (Automated)**
+```bash
+# Clone and setup automatically
+git clone https://github.com/yourusername/finance-mentor-ai.git
+cd finance-mentor-ai
+python quick_start.py
+python app.py
+```
+
+### **Manual Setup**
+
+#### **Prerequisites**
 - Python 3.8 or higher
 - pip package manager
 - Modern web browser
 
-### **1. Installation**
+#### **1. Installation**
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/yourusername/finance-mentor-ai.git
 cd finance-mentor-ai
 
 # Create virtual environment
@@ -105,42 +116,32 @@ http://localhost:5000
 
 ## 🏗️ **Architecture Overview**
 
-### **Backend Components**
+### **Project Structure**
 
 ```
 finance-mentor-ai/
-├── app.py                    # Main Flask application & routes
-├── config.py                 # Configuration management
-├── requirements_simple.txt   # Optimized dependencies
-├── setup.py                  # Automated setup script
-├── test_setup.py            # System verification tests
-├── models/
-│   ├── database.py          # SQLAlchemy ORM models
-│   └── forecasting.py       # ML forecasting algorithms
-├── nlp/
-│   └── intent_classifier.py # NLP intent recognition
-├── api/
-│   └── plaid_client.py      # Banking API integration
-├── utils/
-│   └── helpers.py           # Utility functions
-├── templates/               # Jinja2 HTML templates
-│   ├── base.html           # Base template with navigation
-│   ├── index.html          # Landing page
-│   ├── dashboard.html      # Main dashboard
-│   ├── analytics.html      # Advanced analytics
-│   ├── budgets.html        # Budget management
-│   ├── goals.html          # Financial goals tracking
-│   ├── investments.html    # Investment portfolio
-│   ├── reports.html        # Financial reports
-│   ├── settings.html       # User preferences
-│   └── auth/               # Authentication pages
-└── static/
-    ├── css/
-    │   └── style.css       # Custom styling
-    └── js/
-        ├── app.js          # Main JavaScript functionality
-        └── performance.js  # Performance optimizations
+├── 📄 Core Application
+│   ├── app.py                    # Main Flask application
+│   └── config.py                 # Configuration settings
+├── 📦 Application Modules
+│   ├── models/                   # Data models & ML
+│   ├── nlp/                      # AI chat processing
+│   ├── api/                      # External integrations
+│   └── utils/                    # Helper functions
+├── 🎨 Frontend
+│   ├── templates/                # HTML templates
+│   └── static/                   # CSS, JavaScript
+├── 📚 Documentation
+│   ├── README.md                 # This file
+│   ├── INSTALLATION.md           # Setup guide
+│   └── CONTRIBUTING.md           # Developer guide
+└── ⚙️ Setup & Testing
+    ├── quick_start.py            # Automated setup
+    ├── requirements_simple.txt   # Core dependencies
+    └── requirements_ml.txt       # Optional ML features
 ```
+
+See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) for detailed file descriptions.
 
 ### **Database Schema**
 

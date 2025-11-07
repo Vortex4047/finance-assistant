@@ -16,8 +16,6 @@ parts/
 sdist/
 var/
 wheels/
-pip-wheel-metadata/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -27,34 +25,31 @@ MANIFEST
 venv/
 env/
 ENV/
-env.bak/
-venv.bak/
+.venv/
 
 # Environment Variables
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+.env.production
+.env.development
 
 # Database
 *.db
 *.sqlite
 *.sqlite3
+finance_mentor.db
 instance/
 
-# Logs
-*.log
-logs/
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.sublime-project
+.sublime-workspace
 
-# OS
+# OS Generated
 .DS_Store
 .DS_Store?
 ._*
@@ -63,26 +58,57 @@ logs/
 ehthumbs.db
 Thumbs.db
 
-# Flask
-instance/
-.webassets-cache
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Testing
-.coverage
-.pytest_cache/
-.tox/
-.nox/
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# Temporary files
+# Runtime & Temporary
 *.tmp
 *.temp
+*.pid
+*.seed
+*.pid.lock
+
+# ML Models & Data
+models/*.pkl
+models/*.joblib
+models/*.h5
+models/*.model
+data/
+*.csv
+*.json.gz
+
+# Deployment & Cloud
+.vercel/
+.netlify/
+.serverless/
+node_modules/
+.next/
+.nuxt/
+dist/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.nyc_output/
+coverage/
+*.cover
+.hypothesis/
+
+# Documentation Build
+docs/_build/
+site/
+
+# Cache
+.cache/
+.parcel-cache/
+.sass-cache/
+
+# Package managers
+package-lock.json
+yarn.lock
+Pipfile.lock
