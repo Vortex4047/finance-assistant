@@ -8,6 +8,7 @@ A comprehensive, AI-powered financial management platform that provides personal
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Flask](https://img.shields.io/badge/Flask-2.3%2B-lightgrey)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Vortex4047/finance-assistant)
 
 ## 🌟 **Key Features**
 
@@ -41,7 +42,13 @@ A comprehensive, AI-powered financial management platform that provides personal
 - **Interactive Charts**: Dynamic visualizations with Chart.js
 - **Professional UI**: Clean, modern interface with smooth animations
 
-## 🚀 **Quick Start Guide**
+## 🚀 **Quick Deploy to Vercel**
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Vortex4047/finance-assistant)
+
+**One-click deployment!** See [DEPLOY_CHECKLIST.md](DEPLOY_CHECKLIST.md) for detailed instructions.
+
+## 🚀 **Quick Start Guide (Local Development)**
 
 ### **Super Quick Start (Automated)**
 ```bash
