@@ -11,7 +11,11 @@ class Config:
     if database_url and database_url.startswith('postgres://'):
         database_url = database_url.replace('postgres://', 'postgresql://', 1)
     
-    SQLALCHEMY_DATABASE_URI = database_url or 'sqlite:///finance_mentor.db'
+    # For Vercel, use /tmp directory for SQLite (serverless limitation)
+    if not database_url:
+        database_url = 'sqlite:////tmp/finance_mentor.db'
+    
+    SQLALCHEMY_DATABASE_URI = database_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         'pool_pre_ping': True,

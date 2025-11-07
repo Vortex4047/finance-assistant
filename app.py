@@ -1069,6 +1069,16 @@ if __name__ == '__main__':
     # For local development
     app.run(debug=True)
 
-# For Vercel deployment
-def handler(request):
-    return app(request.environ, request.start_response)
+# For Vercel deployment - Initialize database on first request
+@app.before_request
+def initialize_database():
+    """Initialize database tables on first request"""
+    if not hasattr(app, '_database_initialized'):
+        try:
+            db.create_all()
+            app._database_initialized = True
+        except Exception as e:
+            print(f"Database initialization error: {e}")
+
+# Vercel serverless handler
+app.app = app
